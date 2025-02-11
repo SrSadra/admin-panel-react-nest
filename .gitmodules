@@ -1,0 +1,3 @@
+[submodule "nest-react-adminpanel"]
+	path = nest-react-adminpanel
+	url = git@github.com:SrSadra/nest-react-adminpanel.git
