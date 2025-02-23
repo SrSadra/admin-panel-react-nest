@@ -1,19 +1,22 @@
 import React, { SyntheticEvent, useState } from 'react'
 import "./Login.css"
 import axios from 'axios';
-import { Navigate, useNavigate } from 'react-router-dom';
+import {  useNavigate } from 'react-router-dom';
+
 
 const Login = () => {
     const [email, setEmail] = useState("");
     const [pass, setPass] = useState("");
-    const [redirect, setRedirect] = useState(false);
     const navigate = useNavigate();
+    // const dispatch = useDispatch<AppDispatch>();
 
     const Submit = async (e : SyntheticEvent) => {
         e.preventDefault();
 
         const response = await axios.post("login" , {email, password: pass}) // withcredentials set to true we can acces cookies from back
         console.log(response.data);
+
+        // dispatch(loginUser({email, password: pass}));
 
         // setRedirect(true);
         navigate("/")

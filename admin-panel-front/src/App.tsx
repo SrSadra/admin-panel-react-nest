@@ -9,6 +9,12 @@ import Dashboard from './pages/Dashboard'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import Register from './pages/Register'
 import Login from './pages/Login'
+import UserCreate from './pages/UserCreate'
+import Roles from './pages/Roles'
+import RoleCreate from './pages/roleCreate'
+import Products from './pages/Products'
+import ProductCreate from './pages/ProductCreate'
+import Orders from './pages/Orders'
 
 function App() {
   // const [count, setCount] = useState(0)
@@ -74,9 +80,15 @@ function App() {
     <BrowserRouter>
           <Routes>
           <Route path='/' Component={Dashboard} />
-          <Route path='/users' Component={Users} />
           <Route path='/register' Component={Register} />
           <Route path='/login' Component={Login} />
+          <Route path='/users' Component={Users} />
+          <Route path='/users/create' Component={UserCreate} />
+          <Route path='/roles' Component={Roles} />
+          <Route path='/roles/create' Component={RoleCreate} />
+          <Route path='/products' Component={Products} />
+          <Route path='/products/create' Component={ProductCreate} />
+          {/* <Route path='/orders' Component={Orders} /> */}
           </Routes>
     </BrowserRouter>
     </div>

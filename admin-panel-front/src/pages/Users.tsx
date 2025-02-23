@@ -2,6 +2,12 @@ import React, { useEffect, useState } from 'react'
 import Wrapper from '../components/Wrapper'
 import axios from 'axios'
 import { User } from '../classes/user'
+import { Link } from 'react-router-dom'
+import Paginator from '../components/Paginator'
+import { useSelector } from 'react-redux'
+import { AppDispatch, RootState } from '../redux/configureStore'
+import { useDispatch } from 'react-redux'
+import { fetchUser } from '../redux/states/user/userSlice'
 
 const Users = () => {
 
@@ -9,28 +15,34 @@ const Users = () => {
     const [currectPage , setCurrentPage] = useState(1);
     const [lastPage , setLastpage] = useState(0);
 
+    const {user} = useSelector((state: RootState) => state.user);
+    const dispatch = useDispatch<AppDispatch>();
+
+
     useEffect(() => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
         (
             async () => {
+                
                 const {data} = await axios.get(`users?page=${currectPage}`);
-                setUsers(data.data.map((user) => {
-                    return new User(user.first_name, user.last_name , user.id , user.email, user.role);
+                setUsers(data.data.filter((el) => {
+                    if (el.id !== user?.id){
+                        return new User(el.first_name, el.last_name , el.id , el.email, el.role);
+                    }
                 }));
                 setLastpage(data.meta.last_page);
             }
-        )
-    }, [currectPage]);
+        )();
+    }, [currectPage, user]);
 
-    const onNextPage = () => {
-        if (currectPage < lastPage){
-            setCurrentPage(currectPage + 1);
-        }
-    }
+    useEffect(() => {
+        dispatch(fetchUser)
+    }, [dispatch])
 
-    const onPrevPage = () => {
-        if (currectPage > 0){
-            setCurrentPage(currectPage - 1);
+
+    const del = async (id : number) => {
+        if (window.confirm("Are you sure?!")){
+            await axios.delete(`users/${id}`);
+            setUsers(users.filter((el: User) => el.id !== id));
         }
     }
 
@@ -38,7 +50,12 @@ const Users = () => {
   return (
     <Wrapper>
 
+    <div className='pt-3 pb-2 mb-3'>
+        <Link to="/users/create" className="btn btn-secondary btn-lg active" role="button" aria-pressed="true">Add user</Link>
+    </div>
+
     <div className="table-responsive small">
+
                 <table className="table table-striped table-sm">
                 <thead>
                     <tr>
@@ -51,14 +68,18 @@ const Users = () => {
                 </thead>
                 <tbody>
  
-                    {users.map((user: User) => {
+                    {users.map((userEl: User) => {
                         return (
-                        <tr key={user.id}>
-                        <td>{user.id}</td>
-                        <td>{user.name}</td>
-                        <td>{user.email}</td>
-                        <td>{user.role.name}</td>
-                        <td></td>
+                        <tr key={userEl.id}>
+                        <td>{userEl.id}</td>
+                        <td>{userEl.name}</td>
+                        <td>{userEl.email}</td>
+                        <td>{userEl.role.name}</td>
+                        <td>
+                            <div>
+                                <a className='btn btn-sm' onClick={() => del(userEl.id)}>Delete</a>
+                            </div>
+                        </td>
                         </tr>
                         )
                     })}
@@ -66,13 +87,7 @@ const Users = () => {
                 </tbody>
                 </table>
             </div>
-
-            <nav>
-                <ul className='pagination'>
-                    <li onClick={onPrevPage}>prev</li>
-                    <li onClick={onNextPage}>next</li>
-                </ul>
-            </nav>
+            <Paginator currectPage={currectPage} lastPage={lastPage} pageChanged={(page) => setCurrentPage(page)} /> {/* we can also use this function like setCurrentPage */}
         </Wrapper>
   )
 }
